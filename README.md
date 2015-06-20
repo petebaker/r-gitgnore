@@ -1,4 +1,4 @@
-R related .gitignore file(s)
+R related .gitignore file
 =============
 
 **git** is a great version control tool.
@@ -16,7 +16,7 @@ them.
 Rather than getting a huge list of files when using commands like
 **git status** use a *.gitignore* file like that provided here.
 
-Using .gitignore
+How to use .gitignore
 ----------
 
 1. Download the file *DOTgitignore* to a base directory you are using
