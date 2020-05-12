@@ -1,0 +1,169 @@
+##!/bin/bash
+##
+## Filename: cpDOTgitignore
+## Purpose:  copy a generic .gitignore template to current directory
+##           assumes DOTgitignore is in ~/lib
+##
+## To make file executable in terminal use:  chmod +x cpDOTgitignore
+
+## Created at:  Tues 2020-05-12 at 12:21:24
+## Author:      Peter Baker
+## Hostname:    clearwell3
+## Directory:   ~/dev/DOTgitignore
+##              should be placed in PATH eg ~/bin
+## Licence:     GPLv3 see <http://www.gnu.org/licenses/>
+##
+## Platform:     Not specified - linux at least but any bash shell should work
+##               including macOS and git-bash or WSL on Windows
+##
+## Rev List:
+##     12/5/2020  Version 0.0-1 Original
+##
+## Based on pp 7-8 of Randal K Michael (2008) Mastering UNIX Shell Scripting
+##
+## set -n  # Uncomment to check script syntax, without extension
+##         # NOTE: Do not forget to put the comment back in or
+##         #       the shell script wil not execute
+## set -x  # Uncomment to debug this shell script
+##
+## Change Log: First version
+##             2020-05-12 at 12:21:24 simple pretty well untested version
+##
+##
+#######################################################################
+##          Define files and variables here                           #
+#######################################################################
+
+## program and version
+VERSION=0.0-1
+PROGRAM=`basename $0`
+EXITCODE=0
+
+## template file for creating .gitignore
+SRC_DIR=${HOME}/lib
+## SRC_DIR="."                               # for development only
+## template file for creating .gitignore
+GITIGNORE=DOTgitignore
+
+## TODO this should be an argument to script so if not . creates new dir etc
+DESTINATION="."
+## for seeing command rather than reading it
+NOTRUN=NO
+
+######################################################################
+#          Define functions here                                     #
+######################################################################
+
+version()
+{
+    echo "$PROGRAM version $VERSION"
+}
+
+usage()
+{
+    echo "Usage: $PROGRAM [--help] [--source dir] [--destination dir]
+                      [--version] [--template file] [--notrun] 
+  --source directory containing .gitignore template. (Default ~/lib)
+  --template file containing gitignore rules. (Default: DOTgitignore)
+  --notrun show copy command but do not copy
+  --destination directory where .gitignore is created (Default: current)"
+}
+
+error()
+{
+    echo "$@" 1>&2
+    usage_and_exit 1
+}
+
+usage_and_exit()
+{
+    usage
+    exit $1
+}
+
+case $(uname) in
+SunOS) alias awk=nawk
+       ;;
+esac
+
+while test $# -gt 0
+do
+    case $1 in
+	--help | --hel | --he | --h | '--?' | -help | -hel | -he | -h | '-?' )
+	    usage_and_exit 0
+	    ;;
+	--version | --versio | --versi | --vers | --ver | --ve | --v |\
+	    -version | -versio | -versi | -vers | -ver | -ve | -v )
+	    version
+	    exit 0
+	    ;;
+	--notrun | --notru | --notr | --not | --no | --n | \
+	    -notrun | -notru | -notr | -not | -no | -n )
+	    NOTRUN=YES
+	    ;;
+	--destination | --destinatio | --destinati | --destinat | --destina |\
+	    --destin | --desti | --dest | --des | --de | --d | \
+	    -destination | -destinatio | -destinati | -destinat | -destina |\
+	    -destin | -desti | -dest | -des | -de | -d )
+	    DESTINATION="$2"
+	    if [ ! -d "$DESTINATION" ]
+	    then
+		error "Destination directory not found: $DESTINATION"
+	    fi
+	    shift
+	    ;;
+	--source | --sourc | --sour | --sou | --so | --s | \
+	    -source | -sourc | -sour | -sou | -so | -s )
+     	    SOURCE="$2"
+	    if [ ! -d "$SOURCE" ]
+	    then
+		error "Source directory not found: $SOURCE"
+	    fi
+	    shift
+	    ;;
+	--template | --templat | --templa | --templ | --temp | --tem | --te | \
+	    --t | -template | -templat | -templa | -templ | -temp | -tem | \
+	    -te | -t )
+	    GITIGNORE="$2"
+	    shift
+	    ;;
+	-*)
+	    error "Unrecognised option: $1"
+	    ;;
+	*)
+	    break
+	    ;;
+    esac
+  shift
+done
+
+######################################################################
+#          Beginning of MAIN                                         #
+######################################################################
+
+## put target and destination to copy command
+
+SOURCE=${SRC_DIR}/${GITIGNORE}
+TARGET=${DESTINATION}/.gitignore
+
+if [ ! -f "$SOURCE" ]
+then
+    error "Template file: $SOURCE not found"
+fi
+
+if test "$NOTRUN" = "YES"
+then
+    echo "Testing $PROGRAM version $VERSION"
+    echo "Copy not run. Command to be run is:"
+    echo cp -iaP ${SOURCE} ${TARGET}
+    exit
+else
+    cp -iaP ${SOURCE} ${TARGET}
+fi
+
+if test DESTINATION = "."
+then
+    echo File: .gitignore successfully created in current directory
+else
+    echo File .gitignore successfully created in ${DESTINATION}
+fi
