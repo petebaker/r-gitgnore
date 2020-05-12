@@ -43,8 +43,8 @@ Notes
    *.gitignore* file again
 
 2. You may wish to add some files which are excluded here like
-   *something.log* or *something.pdf*. Simply use **git add filename**
-   which will track specified file. Alternatively, comment the
+   *something.log* or *something.pdf*. Simply use **git add filename -F**
+   which will force git to track the added file. Alternatively, comment the
    pattern(s) in the file using a hash \#
 
 3. If you need to, then it is easy to not ignore certain files like
